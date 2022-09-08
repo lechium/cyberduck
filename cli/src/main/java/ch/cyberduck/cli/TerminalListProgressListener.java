@@ -71,15 +71,15 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
                     Ansi.ansi().reset());
             }
             else {
-                console.printf("%n%s%s%s\t%s\t%s\t%s%s",
+                console.printf("%n%s%s%s\t%s\t%s\t%s\t%s",
                     Ansi.ansi().bold(),
                     file.isDirectory() ? "d" : "-",
                     file.attributes().getPermission().getSymbol(),
                     formatter.getMediumFormat(
                         file.attributes().getModificationDate()),
-                    StringUtils.isNotBlank(file.attributes().getRegion())
-                        ? file.attributes().getRegion() : StringUtils.EMPTY,
+                    filter.accept(file) ? "v" : "h",
                     file.getName(),
+                    file.attributes().getSize(),
                     Ansi.ansi().reset());
             }
         }
