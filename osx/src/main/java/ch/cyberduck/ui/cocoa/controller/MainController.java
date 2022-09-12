@@ -1153,39 +1153,6 @@ public class MainController extends BundleController implements NSApplication.De
         if(log.isDebugEnabled()) {
             log.debug("applicationShouldTerminateAfterDonationPrompt");
         }
-        if(!displayDonationPrompt) {
-            // Already displayed
-            return NSApplication.NSTerminateNow;
-        }
-        final License key = LicenseFactory.find();
-        if(!key.verify(new DisabledLicenseVerifierCallback())) {
-            final String lastversion = preferences.getProperty("donate.reminder");
-            if(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString().equals(lastversion)) {
-                // Do not display if same version is installed
-                return NSApplication.NSTerminateNow;
-            }
-            // Display after upgrade
-            final Calendar nextreminder = Calendar.getInstance();
-            nextreminder.setTimeInMillis(preferences.getLong("donate.reminder.date"));
-            // Display prompt every n days
-            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("donate.reminder.interval"));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
-            }
-            if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
-                // Do not display if shown in the reminder interval
-                return NSApplication.NSTerminateNow;
-            }
-            // Make sure prompt is not loaded twice upon next quit event
-            displayDonationPrompt = false;
-            donationController = new DonateAlertController(app);
-            donationController.setCallback(donationController);
-            donationController.loadBundle();
-            donationController.window().center();
-            donationController.window().makeKeyAndOrderFront(null);
-            // Delay application termination. Dismissing the donation dialog will reply to quit.
-            return NSApplication.NSTerminateLater;
-        }
         return NSApplication.NSTerminateNow;
     }
 
